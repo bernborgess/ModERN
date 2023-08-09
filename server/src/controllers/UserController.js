@@ -1,3 +1,5 @@
+import AppError from "../utils/AppError.js";
+
 class UserController {
     /**
   * index - GET
@@ -8,6 +10,9 @@ class UserController {
   */
     create(req, res) {
         const { name, email, password } = req.body;
+        if (!name) {
+            throw new AppError("Nome é obrigatório");
+        }
         res.status(201).json({ name, email, password });
     }
 
