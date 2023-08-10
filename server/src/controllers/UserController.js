@@ -36,7 +36,7 @@ class UserController {
     }
 
     async update(request, response) {
-        const { name, email } = request.body;
+        const { name, email, password, old_password } = request.body;
         const { id } = request.params;
 
         const database = await sqliteConnection();
@@ -55,13 +55,37 @@ class UserController {
             throw new AppError(`Este email já está em uso id=${id},${userWithUpdatedEmail.id}`);
         }
 
+        if (name) // TODO Validate
+            user.name = name;
+
+        if (email) // TODO Validate
+            user.email = email;
+
+        if (password) {
+            if (!old_password) {
+                throw new AppError("Você precisa informar a senha antiga para definir a nova senha.");
+            }
+            const checkOldPassword = await bcrypt.compare(old_password, user.password);
+
+            if (!checkOldPassword) {
+                throw new AppError("A senha antiga não confere");
+            }
+            user.password = await bcrypt.hash(password, 8);
+        }
+
+
         await database.run(`--sql
             UPDATE users SET
                 name = ?,
                 email = ?,
+                password = ?,
                 updated_at = ?
             WHERE id = ?` , [
-            name, email, new Date(), id
+            user.name,
+            user.email,
+            user.password,
+            new Date(),
+            id
         ]);
 
         return response.json();
