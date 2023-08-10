@@ -1,5 +1,5 @@
 export function up(knex) {
-    knex.schema.createTable("notes", table => {
+    return knex.schema.createTable("notes", table => {
         table.increments("id");
         table.text("title");
         table.text("description");
@@ -12,5 +12,5 @@ export function up(knex) {
 }
 
 export function down(knex) {
-    knex.schema.dropTable("notes");
+    return knex.schema.dropTable("notes");
 }
