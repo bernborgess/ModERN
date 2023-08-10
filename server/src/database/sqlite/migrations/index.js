@@ -1,4 +1,4 @@
-import sqliteConnection from "../index.js";
+import { sqliteConnection } from "../index.js";
 import createUsers from "./createUsers.js";
 
 export default async function runMigration() {
