@@ -29,9 +29,31 @@ export default class NoteController {
     }
 
     async index(request, response) {
-        const { user_id } = request.query;
+        const { user_id, title, tags } = request.query;
+
+
+        if (tags) {
+            const filteredTags = tags.split(",")
+                .map(tag => tag.trim());
+
+            const notes = await knex("tags")
+                .select([
+                    "notes.id",
+                    "notes.title",
+                    "notes.user_id",
+                ])
+                .where("notes.user_id", user_id)
+                .whereLike("notes.title", `%${title}%`)
+                .whereIn("name", filteredTags)
+                .innerJoin("notes", "notes.id", "tags.note_id")
+                .orderBy("title");
+
+            return response.json(notes);
+        }
+
         const notes = await knex("notes")
             .where({ user_id })
+            .whereLike("title", `%${title}%`)
             .orderBy("title");
         return response.json(notes);
     }
