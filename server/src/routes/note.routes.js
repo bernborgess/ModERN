@@ -8,5 +8,6 @@ const noteController = new NoteController();
 noteRoutes.post("/:user_id", noteController.create);
 noteRoutes.get("/", noteController.index);
 noteRoutes.get("/:id", noteController.show);
+noteRoutes.delete("/:id", noteController.delete);
 
 export default noteRoutes;

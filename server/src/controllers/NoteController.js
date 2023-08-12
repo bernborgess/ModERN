@@ -52,4 +52,10 @@ export default class NoteController {
             links
         });
     }
+
+    async delete(request, response) {
+        const { id } = request.params;
+        await knex("notes").where({ id }).delete();
+        return response.json();
+    }
 }
