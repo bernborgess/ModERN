@@ -29,8 +29,11 @@ export default class NoteController {
     }
 
     async index(request, response) {
-        const notes = await knex("notes");
-        return response.json({ notes });
+        const { user_id } = request.query;
+        const notes = await knex("notes")
+            .where({ user_id })
+            .orderBy("title");
+        return response.json(notes);
     }
 
     async show(request, response) {
