@@ -6,18 +6,12 @@ export default class NoteController {
         const { title, description, tags, links } = request.body;
         const { user_id } = request.params;
 
-        const note_id = await knex("notes").insert({
+        const [note_id] = await knex("notes").insert({
             title, description, user_id
         });
 
-        console.log(`note_id: ${note_id}`);
-        if (Array.isArray(note_id))
-            console.log(`Is array with length ${note_id.length}`)
-
-        const real_id = note_id[0];
-
         const linksInsert = links.map(link => ({
-            note_id: real_id,
+            note_id,
             url: link
         }));
 
@@ -32,5 +26,30 @@ export default class NoteController {
         await knex("tags").insert(tagsInsert);
 
         return response.json();
+    }
+
+    async index(request, response) {
+        const notes = await knex("notes");
+        return response.json({ notes });
+    }
+
+    async show(request, response) {
+        const { id } = request.params;
+        const note = await knex("notes")
+            .where({ id })
+            .first();
+        const tags = await knex("tags")
+            .where({ note_id: id })
+            .orderBy("name");
+        const links = await knex("links")
+            .where({ note_id: id })
+            .orderBy("created_at");
+
+
+        return response.json({
+            ...note,
+            tags,
+            links
+        });
     }
 }

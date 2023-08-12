@@ -32,7 +32,7 @@ class UserController {
             "INSERT INTO users (name,email,password) VALUES (?,?,?)",
             [name, email, hashedPassword]);
 
-        response.status(201).json();
+        return response.status(201).json();
     }
 
     async update(request, response) {
@@ -88,6 +88,15 @@ class UserController {
         ]);
 
         return response.json();
+    }
+
+    async index(request, response) {
+        const database = await sqliteConnection();
+        const users = await database.
+            get("SELECT * FROM users");
+        if (Array.isArray(users))
+            console.log(users);
+        return response.json({ users });
     }
 
 }
