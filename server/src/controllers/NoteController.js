@@ -56,7 +56,6 @@ export default class NoteController {
                     tags: noteTags
                 };
             });
-
             return response.json(notesWithTags);
         }
 
